@@ -1,0 +1,191 @@
+# preparation for final
+## TCP & UDP
+1. Sliding Window Protocal
+https://www.cs.uni.edu/~diesburg/courses/cs3470_fa14/sessions/s29/s29.pdf
++ purpose:
+  + it guarantees the reliable delivery of data
+  + it ensures that data is delivered in order
+  + it enforces flow control between the sender and the receiver.
+
+2. three-way handshake/Connection Set up
+![](./img/Timeline%20for%20three-way%20handshake%20algorithm.jpg)
+
+3. SYN,ACK,FIN
+4. Nagle’s Algorithm
+
+   Nagle's algorithm works by combining a number of small outgoing messages and sending them all at once. Specifically, as long as there is a sent packet for which the sender has received no acknowledgment, the sender should keep buffering its output until it has a full packet's worth of output, thus allowing output to be sent all at once.
+   ```
+   if there is new data to send
+      if the window size >= MSS and available data is >= MSS
+         send complete MSS segment now
+      else
+         if there is unconfirmed data still in the pipe
+            enqueue data in the buffer until an acknowledge is received
+         else
+            send data immediately
+         end if 
+      end if
+   end if
+   ```
+5. TCP delayed ACK
+
+   several ACK responses may be combined together into a single response, reducing protocol overhead.
+
+   Delayed ACKs can give the application the opportunity to update the TCP receive window and also possibly to send an immediate response along with the ACK. 
+
+   problems: If Nagle's algorithm is being used by the sending party, data will be queued by the sender until an ACK is received. If the sender does not send enough data to fill the maximum segment size (for example, if it performs two small writes followed by a blocking read) then the transfer will pause up to the ACK delay timeout.
+
+6. UDP address
+![](./img/The%20UDP%20header.png)
+
+7. sockets
+
+## DNS
++ Domain name: any name represented in the DNS format
++ DNS label: 
+   + each string between two "." (unless the dot is prefixed by “\”) 
+   + i.e. foo.bar is 2 labels foo\\.bar is 1 label
++ DNS zone:
+   + a set of names that are under the same authority
+   + example.com and ftp.example.com, www.example.com 
+   + Zone can be deeper than one label, example.us
++ Delegation:
+   + Transfer of authority for/to a sub-domain
+   + example.org is a delegation from org
+
+![](./img/dividing%20a%20domain%20into%20zones.jpeg)
+1. Record Types
+2. recursive vs iterative
+![](./img/Iterative%20Name%20Resolution.jpg)
+![](./img/Recursive%20Name%20Resolution%20(1).jpg)
++ Performance-wise, which is better?
+  + Recursive method puts higher performance demand on each name server
++ Which works better with caching?
+  + Recursive method works better with caching
++ How about communication cost?
+  + Recursive method can reduce communication cost
+
+## IP Multicast & Unicast & Anycast
+### Multicast
+protocal: IGMP
+
+clone and send
+
+IP Multicast vs Ethernet Multicast
+
+### Anycast
+sequencial packets may be delivered to different anycast nodes
+
+Traffic from differet nodes may follow separate path
+
+## BGP
+### Autonomous System
+An AS is a group of routers that share similar routing policies and operate within a single administrative domain.
+
+An AS typically belongs to one organization
+
+If an AS connects to the public Internet using an exterior gateway protocol such as BGP, then it must be assigned a unique AS number which is managed by the Internet Assigned Numbers Authority (IANA).
+
+### AS Numbers
+AS numbers can be between 1 to 65,535.
++ RIRs manage the AS numbers between 1 and 64,512.
++ The 64,512 - 65,535 numbers are reserved for private use (similar to IP Private addresses).
++ The IANA is enforcing a policy whereby organizations that connect to a single provider use an AS number from the private pool.
+
+### IGP vs EGP
+Interior gateway protocol (IGP): 
++ routing protocol operating within an Autonomous System (AS). 
++ e.g. OSPF
+
+Exterior gateway protocol (EGP):
++ A routing protocol operating between different AS. 
++ BGP is an interdomain routing protocol (IDRP) and is an EGP.
+
+### BGP Basics
+The Internet is a collection of autonomous systems that are interconnected to allow communication among them.
++ BGP provides the routing between these autonomous systems.
+
+BGP is a path vector protocol.
+
+It is the only routing protocol to use TCP. 
++ OSPF and EIGRP operate directly over IP. IS-IS is at the network layer.
++ RIP uses the User Datagram Protocol (UDP) for its transport layer.
+
+BGP Peers = Neighbors
++ When two routers establish a TCP enabled BGP connection, they are called neighbors or peers.
+   + Peer routers exchange multiple connection messages. 
++ Each router running BGP is called a BGP speaker
+
+![](./img/BGP%20Neigbors.jpeg)
+
+IBGP neighbors do not need to be directly connected
+
+EBGP neighbors are usually directly connected. 
+
+EBGP neighbors must have different AS numbers.
+
+## MPLS
+LDP: Label Distribution Protocol 
+  + A simple non-constrained(doesn't support traffic engineering) protocal
+
+RSVP-TE: Resource Reservation Protocal with Traffic Engineering
++ more complex protocal, with more overhead, but which also includes support for traffic-engineering via network resource reservations.
+
+LSP: Label Switched Path
+
+FEC: Forwarding Equivalence Class 
+
+LSR: Label Switching Router
+
+LER: Label Edge Router
+
+MPLS is most commonly categorized as a layer 2.5 protocol.
+
+It resides between the data-link and the network layers in the TCP-IP model.
+
+MPLS directs data from one network element to another based on short path labels, different from the conventional network addresses.
+
+This thus helps in avoiding complex lookups in the routing table.
+
+MPLS is a virtual circuit packet switching technology.
+
+Here, short labels are attached to network packets which describe how to forward them through the network.
+
+Independent of any routing protocol.
+
+### Packet Switching v/s Circuit Switching
++ Circuit Switching:
+   + Source first establishes a connection to the destination. 
+   + Source sends data over the connection.
+   + Source tears down the connection when done.
+   + Similar to how telephonic conversation works
++ Packet Switching:
+   + Data is divided into packets.
+   + Each packet contains its own header. 
+   + Destination reconstructs the message
+
+### Virtual Circuit
+Combination of packet and circuit switching.
+
+It’s a logical circuit between the source and destination.
+
+Every Virtual Circuit is identified by a VC ID.
+
+The source set-up will establish the path for the VC.
+
+Switch will then map the VC to an outgoing link.
+
+The packet will then have a fixed length label in the header.
+
+### MPLS versus IP routing
+IP routing: path to destination determined by destination address alone
+
+MPLS routing: path to destination  can be based on source and dest address
+
+There are two main types of MPLS routing protocols in use today:
+- Label Distribution Protocol (LDP): a simple protocol that doesn’t support traffic engineering.
+- Resource Reservation Protocol with traffic engineering (RSVP-TE).
+
+### pros & cons of switching vs. routing
+1. switching reduce IP routing lookups(routing use 'longest prefix matching', switching use 'exact matching'. Exact matching is cheaper and easier to implement)
+ 
