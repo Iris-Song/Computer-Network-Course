@@ -1,7 +1,6 @@
 # preparation for final
 ## TCP & UDP
-1. Sliding Window Protocal
-https://www.cs.uni.edu/~diesburg/courses/cs3470_fa14/sessions/s29/s29.pdf
+1. [Sliding Window Protocal](https://www.cs.uni.edu/~diesburg/courses/cs3470_fa14/sessions/s29/s29.pdf)
 + purpose:
   + it guarantees the reliable delivery of data
   + it ensures that data is delivered in order
@@ -36,9 +35,59 @@ https://www.cs.uni.edu/~diesburg/courses/cs3470_fa14/sessions/s29/s29.pdf
    problems: If Nagle's algorithm is being used by the sending party, data will be queued by the sender until an ACK is received. If the sender does not send enough data to fill the maximum segment size (for example, if it performs two small writes followed by a blocking read) then the transfer will pause up to the ACK delay timeout.
 
 6. UDP address
+
 ![](./img/The%20UDP%20header.png)
 
 7. sockets
+
+what is socket?
++ a socket is a programming interface and endpoint for network communication. It is a mechanism that allows processes on different devices to communicate over a network. Sockets provide a standard API for network communication, allowing applications to send and receive data over a network.
+
+UDP socket
+```
+# server
+from socket import socket, AF_INET, SOCK_DGRAM
+s = socket(AF_INET, SOCK_DGRAM)
+s.bind(('127.0.0.1', 11111))
+while True:
+   data, addr = s.recvfrom(1024)
+   print "Connection from", addr
+   s.sendto(data.upper(), addr)
+
+# client
+from socket import socket, AF_INET, SOCK_DGRAM
+s = socket(AF_INET, SOCK_DGRAM)
+s.bind(('127.0.0.1', 0)) 
+print "using", s.getsocketname()
+server = ('127.0.0.1', 11111)
+s.sendto("MixedCaseString", server)
+data, addr = s.recvfrom(1024)
+print "received", data, "from", addr
+s.close()
+```
+
+TCP socket
+```
+# server
+from socket import socket, AF_INET, SOCK_STREAM
+s = socket(AF_INET, SOCK_STREAM)
+s.bind(('127.0.0.1', 9999))
+s.listen(5) # max queued connections
+while True:
+   sock, addr = s.accept()
+   # use socket sock to communicate 
+   # with client process
+
+# client
+from socket import socket, AF_INET, SOCK_STREAM
+(SERVER, PORT) = ('127.0.0.1', 9999)
+s = socket(AF_INET, SOCK_STREAM)
+s.connect((SERVER, PORT))
+s.send('Hello, world')
+data = s.recv(1024)
+s.close()
+print 'Received', data
+```
 
 ## DNS
 + Domain name: any name represented in the DNS format
@@ -54,7 +103,7 @@ https://www.cs.uni.edu/~diesburg/courses/cs3470_fa14/sessions/s29/s29.pdf
    + example.org is a delegation from org
 
 ![](./img/dividing%20a%20domain%20into%20zones.jpeg)
-1. Record Types
+1. [Record Types](https://github.com/Iris-Song/Computer-Network-Course/blob/main/NOTES/7.%20Application%20Layer.md#record-types-in-dns)
 2. recursive vs iterative
 ![](./img/Iterative%20Name%20Resolution.jpg)
 ![](./img/Recursive%20Name%20Resolution%20(1).jpg)
@@ -153,7 +202,7 @@ Here, short labels are attached to network packets which describe how to forward
 
 Independent of any routing protocol.
 
-### Packet Switching v/s Circuit Switching
+### Packet Switching vs Circuit Switching
 + Circuit Switching:
    + Source first establishes a connection to the destination. 
    + Source sends data over the connection.
@@ -188,4 +237,35 @@ There are two main types of MPLS routing protocols in use today:
 
 ### pros & cons of switching vs. routing
 1. switching reduce IP routing lookups(routing use 'longest prefix matching', switching use 'exact matching'. Exact matching is cheaper and easier to implement)
+2. switching is easy to configure.
+3. Switches are often less expensive than routers, making them a cost-effective solution for connecting devices within the same network segment.
+4. Routers logically segment networks into subnets, providing a higher level of control and security. 
+5. Routing is highly scalable and can accommodate large and diverse networks. It is well-suited for connecting geographically dispersed networks.
+6. Routing enables communication between different networks and subnets, allowing for the creation of larger and more complex networks.
+
+### MPLS vs OSPF
+
++ Purpose and Functionality:
+  + MPLS: MPLS is a protocol-agnostic technique for high-performance telecommunications networks that directs data from one network node to the next based on short path labels rather than long network addresses, avoiding complex lookups in a routing table.
+  + OSPF: OSPF is a routing protocol used to find the best path for routing data packets between routers in a network. It is specifically designed for IP networks and operates within the Internet Layer of the OSI model.
+
++ Layer of the OSI Model:
+  + MPLS: Operates at the Data Link Layer (Layer 2) and Network Layer (Layer 3) of the OSI model, depending on its implementation.
+  + OSPF: Operates at the Network Layer (Layer 3) of the OSI model.
+
++ Topology Awareness:
+  + MPLS: MPLS is not inherently aware of the underlying network topology. It is more concerned with forwarding packets based on labels without necessarily considering the details of the network structure.
+  + OSPF: OSPF is a link-state routing protocol that is topology-aware. It builds a detailed map of the network and calculates the best paths based on the cost of links.
+
++ Routing vs. Label Switching:
+  + MPLS: Focuses on label switching, where packets are forwarded based on pre-assigned labels, improving network efficiency and speed.
+  + OSPF: Focuses on routing, determining the best paths for IP packets based on metrics such as link bandwidth and cost.
+
++ Scalability:
+  + MPLS: MPLS is often used in large service provider networks for its scalability and ability to efficiently handle large amounts of traffic.
+  + OSPF: OSPF is suitable for medium to large enterprise networks, but its scalability may become a challenge in very large networks.
+
++ Traffic Engineering:
+  + MPLS: MPLS allows for explicit traffic engineering, where paths can be explicitly defined and managed to optimize network performance.
+  + OSPF: While OSPF can influence routing paths based on metrics, it may not provide the same level of explicit traffic engineering capabilities as MPLS.
  
