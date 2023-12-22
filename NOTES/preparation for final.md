@@ -10,7 +10,7 @@
 ![](./img/Timeline%20for%20three-way%20handshake%20algorithm.jpg)
 
 3. SYN,ACK,FIN
-4. Nagle’s Algorithm
+4. `Nagle’s Algorithm`
 
    Nagle's algorithm works by combining a number of small outgoing messages and sending them all at once. Specifically, as long as there is a sent packet for which the sender has received no acknowledgment, the sender should keep buffering its output until it has a full packet's worth of output, thus allowing output to be sent all at once.
    ```
@@ -37,6 +37,22 @@
 6. UDP address
 
 ![](./img/The%20UDP%20header.png)
++ Can I send a UDP datagram to a broadcast address?
+   
+   Answer is yes.
+
+
+   Broadcasting in UDP is achieved by sending the datagram to a special broadcast address. In IPv4,
+this address is typically the last address of the subnet. For example, if your subnet is
+192.168.1.0/24 , the broadcast address would be 192.168.1.255 . Any UDP datagram sent to
+this address will be delivered to all hosts on the subnet.
+
+   But TCP cannot.
+
+   No, you cannot send a TCP (Transmission Control Protocol) frame to a broadcast address. TCP is a
+connection-oriented protocol, which means it establishes a direct connection between two
+specific endpoints (a client and a server) before any data is exchanged. This connection is
+established through a process known as the TCP three-way handshake.
 
 7. sockets
 
@@ -268,4 +284,13 @@ There are two main types of MPLS routing protocols in use today:
 + Traffic Engineering:
   + MPLS: MPLS allows for explicit traffic engineering, where paths can be explicitly defined and managed to optimize network performance.
   + OSPF: While OSPF can influence routing paths based on metrics, it may not provide the same level of explicit traffic engineering capabilities as MPLS.
- 
+
+## 802.11 vs 802.3
+RTS, CTS in wireless.
+
+Collision Detection in 802.11 
+
++ No. 
+
+Collision Avoidance in 802.11 
++ Yes. CSMA/CA
